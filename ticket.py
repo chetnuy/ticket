@@ -12,11 +12,11 @@ import asciichartpy
 #args parse
 parser = argparse.ArgumentParser(description='Ticket review')
 parser.add_argument('name',   type=str, nargs='*',
-                    help='set ticket')
+                    help='set ticket for current worth')
 parser.add_argument('-g', type=str, nargs='+',
-                    help='graph for ticket(default: find the max)')
-parser.add_argument('-t', type=str, nargs='+', default='1d',
-                    help='timestamp(default: week)')
+                    help='graph for ticket')
+parser.add_argument('-t', type=str, nargs='+', default='5d',
+                    help='timestamp   (default:week; possibly:  1d,1mo,1y,max)')
 
 args = parser.parse_args()
 def request(ticket):
@@ -42,7 +42,7 @@ def format(reply):
 
 
   #print(field.get('symbol'),field.get('regularMarketPreviousClose'),field.get('regularMarketPrice'),field.get('regularMarketChangePercent'))
-    print('{:15} {:<10} {:<10}  {:5.2}'  .format(field.get('symbol'),field.get('regularMarketPreviousClose'),field.get('regularMarketPrice'),field.get('regularMarketChangePercent')))
+    print('{:15} {:<10} {:<10}  {:5.2}'"%"  .format(field.get('symbol'),field.get('regularMarketPreviousClose'),field.get('regularMarketPrice'),field.get('regularMarketChangePercent')))
     #print('{1}      {0}'.format('one', 'two'))
 
     print(Fore.RESET,end='')
@@ -86,7 +86,8 @@ def graph_format(reply):
             if x % 3 == 0 and x < len(mass):
                 del mass[x]
 
-    print(ticket.get("symbol"))
+    #range = ''.join(range)
+    print(ticket.get("symbol"), "time:", ''.join(args.t))
     time_tuple1 = time.localtime(timestamp[0])
     time_tuple2 = time.localtime(timestamp[-1])
     #print(time.strftime("%D %H:%M", time_tuple))
@@ -95,15 +96,6 @@ def graph_format(reply):
     print("-----------------------------------------------")
 
 
-
-
-# print(args)
-# print(args.g)
-# print(type(args.g))
-# print(args.t)
-# print(type(args.t))
-# print(args.name)
-# print(type(args.name))
 
 if args.name == None and args.g == None:
     parser.print_help(sys.stderr)
