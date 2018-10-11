@@ -1,18 +1,21 @@
 #!/bin/python
 
 import certifi
+import  sys
+import  time
 import urllib3
 import  json
 from colorama import  Fore
 import argparse
+import asciichartpy
 
 #args parse
 parser = argparse.ArgumentParser(description='Ticket review')
-parser.add_argument('name',   type=str, nargs='+',
+parser.add_argument('name',   type=str, nargs='*',
                     help='set ticket')
 parser.add_argument('-g', type=str, nargs='+',
                     help='graph for ticket(default: find the max)')
-parser.add_argument('-t', type=str, nargs='+',
+parser.add_argument('-t', type=str, nargs='+', default='1d',
                     help='timestamp(default: week)')
 
 args = parser.parse_args()
@@ -45,9 +48,13 @@ def format(reply):
     print(Fore.RESET,end='')
 
 def graph_request(ticket, range):
+    ticket = ''.join(ticket)
+    range = ''.join(range)
+
 
     link = 'https://query1.finance.yahoo.com/v8/finance/chart/SBER.ME?range=2d&includePrePost=false&interval=1h&corsDomain=finance.yahoo.com&.tsrc=finance'
     link = link.replace('SBER.ME', ticket)
+  #  print(range)
     link = link.replace('2d', range)
     if range == '1mo':
         link = link.replace('1h', '1d')
@@ -57,7 +64,7 @@ def graph_request(ticket, range):
         link = link.replace('1h', '3mo')
     elif range == '1d':
         link = link.replace('1h', '15m')
-    print(link)
+  #  print(link)
 
     http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',ca_certs=certifi.where())
     socket = http.request('GET', link)
@@ -67,17 +74,50 @@ def graph_request(ticket, range):
 
 def graph_format(reply):
     timestamp = reply['chart']['result'][0]['timestamp']
+    ticket = reply['chart']['result'][0]['meta']
     price = reply['chart']['result'][0]['indicators']['quote'][0]['open']
+    #print(price )
+    #print(timestamp)
+    mass = [x for x in price if x is not None]
+
+    while len(mass) >= 70:
+        for x in range(len(mass)):
+            # print(array[x])
+            if x % 3 == 0 and x < len(mass):
+                del mass[x]
+
+    print(ticket.get("symbol"))
+    time_tuple1 = time.localtime(timestamp[0])
+    time_tuple2 = time.localtime(timestamp[-1])
+    #print(time.strftime("%D %H:%M", time_tuple))
+    print("START:",(time.strftime("%D %H:%M", time_tuple1)),"     ","END:",(time.strftime("%D %H:%M", time_tuple2)))
+    print(asciichartpy.plot(mass, {'height': 10}))
+    print("-----------------------------------------------")
 
 
 
 
+# print(args)
+# print(args.g)
+# print(type(args.g))
+# print(args.t)
+# print(type(args.t))
+# print(args.name)
+# print(type(args.name))
 
-for tick in args.name:
-    ticket =request(tick)
-    format(ticket)
-for tick in args.g:
-    tick=graph_request(args.g,args.t)
+if args.name == None and args.g == None:
+    parser.print_help(sys.stderr)
+    sys.exit(1)
+if args.name != None:
+    for tick in args.name:
+        ticket =request(tick)
+        format(ticket)
+    print("-----------------------------------------------")
+if args.g != None:
+    for tick in args.g:
+        tic=graph_request(tick,args.t)
+        graph_format(tic)
+
 
 
 
