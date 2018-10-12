@@ -17,6 +17,8 @@ parser.add_argument('-g', type=str, nargs='+',
                     help='graph for ticket')
 parser.add_argument('-t', type=str, nargs='+', default='5d',
                     help='timestamp   (default:week; possibly:  1d,1mo,1y,max)')
+parser.add_argument ('-i', '--info', action='store_const', const=True,
+                    help='timestamp   (default:week; possibly:  1d,1mo,1y,max)')
 
 args = parser.parse_args()
 def request(ticket):
@@ -64,7 +66,7 @@ def graph_request(ticket, range):
         link = link.replace('1h', '3mo')
     elif range == '1d':
         link = link.replace('1h', '15m')
-  #  print(link)
+   # print(link)
 
     http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',ca_certs=certifi.where())
     socket = http.request('GET', link)
@@ -92,15 +94,17 @@ def graph_format(reply):
     time_tuple2 = time.localtime(timestamp[-1])
     #print(time.strftime("%D %H:%M", time_tuple))
     print("START:",(time.strftime("%D %H:%M", time_tuple1)),"     ","END:",(time.strftime("%D %H:%M", time_tuple2)))
+    #print("dhh",mass)
     print(asciichartpy.plot(mass, {'height': 10}))
     print("-----------------------------------------------")
 
 
 
-if args.name == None and args.g == None:
+# if args.name == type(None) and args.g == type(None):
+if not args.name  and not args.g :
     parser.print_help(sys.stderr)
     sys.exit(1)
-if args.name != None:
+if args.name != False:
     for tick in args.name:
         ticket =request(tick)
         format(ticket)
@@ -109,7 +113,8 @@ if args.g != None:
     for tick in args.g:
         tic=graph_request(tick,args.t)
         graph_format(tic)
-
-
+if args.info:
+    file = open("info.txt","r")
+    print (file.read())
 
 

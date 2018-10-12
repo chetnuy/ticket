@@ -1,0 +1,22 @@
+Hint
+-----------------------------------------------
+Indexes:
+^GSPC - S&P 500
+^DJI - Dow Jones Industrial Average
+^IXIC - NASDAQ Composite
+^RUT - Russel 2000
+IMOEX.ME - MOEX Russia index
+RTSI.ME - RTS Index (Russia)
+-----------------------------------------------
+Raw & Futures
+CL=F - Crude Oil Nov18
+GC=F - Gold Dec 18
+-----------------------------------------------
+Stock Exchange
+*(1810).HK - Hong Kong Exchanges
+*.ME - Moscow Exchanges
+-----------------------------------------------
+For other info see:
+https://finance.yahoo.com
+and edit file info.txt
+
