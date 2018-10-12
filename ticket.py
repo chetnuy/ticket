@@ -18,7 +18,7 @@ parser.add_argument('-g', type=str, nargs='+',
 parser.add_argument('-t', type=str, nargs='+', default='5d',
                     help='timestamp   (default:week; possibly:  1d,1mo,1y,max)')
 parser.add_argument ('-i', '--info', action='store_const', const=True,
-                    help='timestamp   (default:week; possibly:  1d,1mo,1y,max)')
+                    help='information of ticket')
 
 args = parser.parse_args()
 def request(ticket):
@@ -89,7 +89,7 @@ def graph_format(reply):
                 del mass[x]
 
     #range = ''.join(range)
-    print(ticket.get("symbol"), "time:", ''.join(args.t))
+    print(ticket.get("symbol"), "timestamp:", ''.join(args.t))
     time_tuple1 = time.localtime(timestamp[0])
     time_tuple2 = time.localtime(timestamp[-1])
     #print(time.strftime("%D %H:%M", time_tuple))
@@ -101,6 +101,10 @@ def graph_format(reply):
 
 
 # if args.name == type(None) and args.g == type(None):
+if args.info:
+    file = open("info.txt","r")
+    print (file.read())
+    sys.exit(1)
 if not args.name  and not args.g :
     parser.print_help(sys.stderr)
     sys.exit(1)
@@ -113,8 +117,5 @@ if args.g != None:
     for tick in args.g:
         tic=graph_request(tick,args.t)
         graph_format(tic)
-if args.info:
-    file = open("info.txt","r")
-    print (file.read())
 
 

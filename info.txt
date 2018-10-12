@@ -1,4 +1,13 @@
-Hint
+-----------------------------------------------
+Cryptocurrency:
+ETH-USD
+XRP-EUR
+ZEC-USD
+BCH-USD
+BTC-USD
+BTC-RUB
+LTC-USD
+XMR-USD
 -----------------------------------------------
 Indexes:
 ^GSPC - S&P 500
@@ -8,12 +17,22 @@ Indexes:
 IMOEX.ME - MOEX Russia index
 RTSI.ME - RTS Index (Russia)
 -----------------------------------------------
-Raw & Futures
+Currency:
+JPY=X - Japan yen
+CNY=X - China yuan
+RUB=X - Russian ruble
+-----------------------------------------------
+Raw & Futures:
 CL=F - Crude Oil Nov18
 GC=F - Gold Dec 18
+^TNX - 10 Year Bound
+SI=F - Silver
+HG=F - Copper
 -----------------------------------------------
-Stock Exchange
-*(1810).HK - Hong Kong Exchanges
+Other Stock Exchange:
+*.F - Frankfurt Exchanges (SSUN.F)
+*.T - Tokyo EXchanges
+*.HK - Hong Kong Exchanges
 *.ME - Moscow Exchanges
 -----------------------------------------------
 For other info see:
