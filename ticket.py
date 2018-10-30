@@ -1,6 +1,7 @@
 #!/bin/python
 
 import certifi
+import os.path
 import  sys
 import  time
 import urllib3
@@ -101,8 +102,10 @@ def graph_format(reply):
 
 
 # if args.name == type(None) and args.g == type(None):
+my_path = os.path.abspath(os.path.dirname(__file__))
+path = os.path.join(my_path, "info.txt")
 if args.info:
-    file = open("info.txt","r")
+    file = open(path,"r")
     print (file.read())
     sys.exit(1)
 if not args.name  and not args.g :
