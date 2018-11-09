@@ -1,4 +1,4 @@
-#!/bin/python
+#!/bin/env python3
 
 import certifi
 import os.path
@@ -20,6 +20,8 @@ parser.add_argument('-t', type=str, nargs='+', default='5d',
                     help='timestamp   (default:week; possibly:  1d,1mo,1y,max)')
 parser.add_argument ('-i', '--info', action='store_const', const=True,
                     help='information of ticket')
+parser.add_argument ('-l', '--list', action='store_const', const=True,
+                     help='setup list of ticket')
 
 args = parser.parse_args()
 def request(ticket):
@@ -103,14 +105,22 @@ def graph_format(reply):
 
 # if args.name == type(None) and args.g == type(None):
 my_path = os.path.abspath(os.path.dirname(__file__))
-path = os.path.join(my_path, "info.txt")
+infoFile = os.path.join(my_path, "info.txt")
+listFile = os.path.join(my_path, "list.txt")
 if args.info:
-    file = open(path,"r")
+    file = open(infoFile, "r")
     print (file.read())
-    sys.exit(1)
+    sys.exit(0)
+if args.list:
+    file = open(listFile, 'r')
+    rlist=(file.read().splitlines())
+    for i in rlist:
+        ticket = request(i)
+        format(ticket)
+    sys.exit(0)
 if not args.name  and not args.g :
     parser.print_help(sys.stderr)
-    sys.exit(1)
+    sys.exit(0)
 if args.name != False:
     for tick in args.name:
         ticket =request(tick)
