@@ -82,8 +82,7 @@ class Graph(threading.Thread):
             link = link.replace('1h', '3mo')
         elif range == '1d':
             link = link.replace('1h', '15m')
-       # print(link)
-
+       #print(link)
         http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',ca_certs=certifi.where())
         socket = http.request('GET', link)
         reply = json.loads(socket.data.decode('utf-8'))
@@ -115,19 +114,6 @@ class Graph(threading.Thread):
         print("-----------------------------------------------")
 
 
-
-
-#thread_names = ['RUB=X', 'CNY=X', 'SBER.ME', 'LKOH.ME', 'YNDX.ME']
-#long = [ '1d', '1mo', '1y', '1mo', '1y']
-#
-#for i in range(5):
-#    thread = Ticket(thread_names[i])
-##    thread.setName(thread_names[i])
-#    thread.start()
-#for i in range(5):
-#    thread2= Graph(thread_names[i], long[i])
-#    thread2.start()
-#
 
 
 parser = argparse.ArgumentParser(description='Ticket review')
@@ -171,11 +157,5 @@ if args.name != False:
     print("-----------------------------------------------")
 if args.g != None:
     for tick in args.g:
-      #  tic=graph_request(tick,args.t)
-      #  graph_format(tic)
-        thread2= Graph(tick, args.t)
-        thread2.start()
-
-
-
-
+        thread_graph= Graph(tick, args.t)
+        thread_graph.start()
