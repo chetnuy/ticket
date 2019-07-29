@@ -2,7 +2,6 @@
 # @author      : nevernew (nevernew@mail.ru)
 # @created     : 26/02/2019
 # @description :  this ticket.py OOP version
-#dddd
 
 import threading
 import certifi
