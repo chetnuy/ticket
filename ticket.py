@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # @author      : nevernew (nevernew@mail.ru)
 # @created     : 26/02/2019
-# @description :  this ticket.py OOP version
+# @description : v.0.8 add ticket.list
 
 import threading
 import certifi
@@ -21,37 +21,22 @@ class Ticket(threading.Thread) :
         threading.Thread.__init__(self)
         self.ticket = ticket
 
-    
     def run(self):
-        reply = self.request(self.ticket)
-        self.format(reply)
-
+        self._return = self.request(self.ticket)
+    
+    def join(self):
+        threading.Thread.join(self)
+        return self._return
 
     def request(self, ticket):
-
         link = "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&fields="
         fields = "symbol,marketState,regularMarketPrice,regularMarketChange,regularMarketChangePercent,preMarketPrice,preMarketChange,\
 preMarketChangePercent,postMarketPrice,postMarketChange,postMarketChangePercent"
-
         http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',ca_certs=certifi.where())
         socket = http.request('GET', link+fields+'&symbols='+ticket)
         reply = json.loads(socket.data.decode('utf-8'))
-        return reply
-
-
-    def format(self, reply):
         field = reply['quoteResponse']['result'][0]
-        #print(field)
-        #print(field.get('regularMarketChangePercent'))
-        if field.get('regularMarketChangePercent') < 0:
-            print(Fore.RED,end='')
-        elif field.get('regularMarketChangePercent') > 0:
-            print(Fore.GREEN,end='')
-      #print(field.get('symbol'),field.get('regularMarketPreviousClose'),field.get('regularMarketPrice'),field.get('regularMarketChangePercent'))
-        print('{:15} {:<10} {:<10}  {:5.2}'"%"  .format(field.get('symbol'),field.get('regularMarketPreviousClose'),field.get('regularMarketPrice'),field.get('regularMarketChangePercent')))
-        #print('{1}      {0}'.format('one', 'two'))
-
-        print(Fore.RESET,end='')
+        return field
 
 
 class Graph(threading.Thread):
@@ -72,7 +57,6 @@ class Graph(threading.Thread):
         range = ''.join(range)
         link = 'https://query1.finance.yahoo.com/v8/finance/chart/SBER.ME?range=2d&includePrePost=false&interval=1h&corsDomain=finance.yahoo.com&.tsrc=finance'
         link = link.replace('SBER.ME', ticket)
-      #  print(range)
         link = link.replace('2d', range)
         if range == '1mo':
             link = link.replace('1h', '1d')
@@ -82,7 +66,6 @@ class Graph(threading.Thread):
             link = link.replace('1h', '3mo')
         elif range == '1d':
             link = link.replace('1h', '15m')
-       #print(link)
         http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',ca_certs=certifi.where())
         socket = http.request('GET', link)
         reply = json.loads(socket.data.decode('utf-8'))
@@ -93,28 +76,56 @@ class Graph(threading.Thread):
         timestamp = reply['chart']['result'][0]['timestamp']
         ticket = reply['chart']['result'][0]['meta']
         price = reply['chart']['result'][0]['indicators']['quote'][0]['open']
-        #print(price )
-        #print(timestamp)
         mass = [x for x in price if x is not None]
 
         while len(mass) >= 70:
             for x in range(len(mass)):
-                # print(array[x])
                 if x % 3 == 0 and x < len(mass):
                     del mass[x]
 
-        #range = ''.join(range)
         print(ticket.get("symbol"), "timestamp:", ''.join(args.t))
         time_tuple1 = time.localtime(timestamp[0])
         time_tuple2 = time.localtime(timestamp[-1])
-        #print(time.strftime("%D %H:%M", time_tuple))
         print("START:",(time.strftime("%D %H:%M", time_tuple1)),"     ","END:",(time.strftime("%D %H:%M", time_tuple2)))
-        #print("dhh",mass)
         print(asciichartpy.plot(mass, {'height': 10}))
         print("-----------------------------------------------")
 
 
 
+class ReadConfig():
+
+    def __init__(self, configPath):
+        self.configPath = configPath
+        self.TicketListFromConf = []
+        self.RawConfig = []
+        self.ParseConfFile()
+
+
+    def ParseConfFile(self):
+        file = open(configPath, 'r')
+        self.RawConfig=(file.read().splitlines())
+
+        for i in self.RawConfig:
+            if "###" in i:
+                continue
+            elif ";;;" in i:
+                continue
+            else:
+                self.TicketListFromConf.append(i)
+
+    def getTupleConfig(self):
+        return self.TicketListFromConf, self.RawConfig
+
+
+class FormatList():
+    
+    def __init__(self, tupleConfig):
+        self.tupleConfig = tupleConfig
+
+
+    def read(self):
+        return 0
+    
 
 parser = argparse.ArgumentParser(description='Ticket review')
 parser.add_argument('name',   type=str, nargs='*',
@@ -135,27 +146,71 @@ args = parser.parse_args()
 # if args.name == type(None) and args.g == type(None):
 my_path = os.path.abspath(os.path.dirname(__file__))
 infoFile = os.path.join(my_path, "info.txt")
-listFile = os.path.join(my_path, "list.txt")
+configPath= os.path.join(my_path, "ticket.list")
+threads = []
+dticket = {}
+
 if args.info:
     file = open(infoFile, "r")
     print (file.read())
     sys.exit(0)
+
 if args.list:
-    file = open(listFile, 'r')
-    rlist=(file.read().splitlines())
-    for i in rlist:
+
+    myReadConfig = ReadConfig(configPath)
+    tupleConfig = myReadConfig.getTupleConfig()
+
+    for i in tupleConfig[0]:
         thread = Ticket(i)
         thread.start()
+        threads.append(thread)
+
+    for x in threads:
+        x.join()
+        dticket.update({x:x.join()})
+
+    for i in range (len(tupleConfig[1])):
+       if "###" in tupleConfig[1][i]:
+            continue
+       elif ";;;" in tupleConfig[1][i]:
+            print(tupleConfig[1][i])
+       else :
+           for val in dticket.values():
+                if tupleConfig[1][i] == val.get('symbol'):
+                   if val.get('regularMarketChangePercent') < 0:
+                        print(Fore.RED,end='')
+                   elif val.get('regularMarketChangePercent') > 0:
+                        print(Fore.GREEN,end='')
+                   print('{:15} {:<10} {:<10}  {:5.2}'"%"  .format(val.get('symbol'),val.get('regularMarketPreviousClose'),val.get('regularMarketPrice'),val.get('regularMarketChangePercent')))
+                   print(Fore.RESET,end='')
+
     sys.exit(0)
-if not args.name  and not args.g :
-    parser.print_help(sys.stderr)
-    sys.exit(0)
+
+
 if args.name != False:
+
     for tick in args.name:
         thread = Ticket(tick)
         thread.start()
-    print("-----------------------------------------------")
+        threads.append(thread)
+
+    for i in threads:
+        i.join()
+        if i.join().get('regularMarketChangePercent') < 0:
+             print(Fore.RED,end='')
+        elif i.join().get('regularMarketChangePercent')> 0:
+             print(Fore.GREEN,end='')
+        print('{:15} {:<10} {:<10}  {:5.2}'"%"  .format(i.join().get('symbol'),i.join().get('regularMarketPreviousClose'),i.join().get('regularMarketPrice'),i.join().get('regularMarketChangePercent')))
+        print(Fore.RESET,end='')
+
+#    sys.exit(0)
+
 if args.g != None:
     for tick in args.g:
         thread_graph= Graph(tick, args.t)
         thread_graph.start()
+
+
+if not args.name  and not args.g :
+    parser.print_help(sys.stderr)
+    sys.exit(0)
