@@ -2,6 +2,7 @@
 ### Add your Ticketname
 ;;; Currency
 EURRUB=X
+CNYRUB=X
 RUB=X
 CNY=X
 DX-Y.NYB
