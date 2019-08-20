@@ -1,5 +1,12 @@
 ### This comment section  &&  ;;; This header section
 ### Add your Ticketname
+;;; Index
+^GSPC
+^IXIC
+RTSI.ME
+RGBI.ME
+^HSI
+000001.SS
 ;;; Currency
 EURRUB=X
 CNYRUB=X
@@ -8,13 +15,18 @@ CNY=X
 DX-Y.NYB
 EURUSD=X
 BTCUSD=X
-;;; Index
-^GSPC
-000001.SS
-RTSI.ME
-RGBI.ME
+;;; Futures
+GC=F
 CL=F
+^TNX
 ;;; Stock
 SBER.ME
+YNDX.ME
+GAZP.ME
 MGNT.ME
+ALRS.ME
+RTKM.ME
+PHOR.ME
+PIKK.ME
+ROSN.ME
 AAPL
