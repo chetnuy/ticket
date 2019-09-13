@@ -17,7 +17,7 @@ EURUSD=X
 BTCUSD=X
 ;;; Futures
 GC=F
-CL=F
+BZ=F
 ^TNX
 ;;; Stock
 SBER.ME
