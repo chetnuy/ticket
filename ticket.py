@@ -134,6 +134,8 @@ parser.add_argument('-g', type=str, nargs='+',
                     help='graph for ticket')
 parser.add_argument('-t', type=str, nargs='+', default='5d',
                     help='timestamp   (default:week; possibly:  1d,1mo,1y,max)')
+parser.add_argument('-n', '--nocolor', action='store_const', const=True,
+                    help='no color output')
 parser.add_argument ('-i', '--info', action='store_const', const=True,
                     help='information of ticket')
 parser.add_argument ('-l', '--list', action='store_const', const=True,
@@ -187,7 +189,7 @@ if args.list:
     sys.exit(0)
 
 
-if args.name != False:
+if args.name != False and args.nocolor == None:
 
     for tick in args.name:
         thread = Ticket(tick)
@@ -203,6 +205,16 @@ if args.name != False:
         print('{:15} {:<10} {:<10}  {:5.2}'"%"  .format(i.join().get('symbol'),i.join().get('regularMarketPreviousClose'),i.join().get('regularMarketPrice'),i.join().get('regularMarketChangePercent')))
         print(Fore.RESET,end='')
 
+if args.name != False and args.nocolor != None:
+
+    for tick in args.name:
+        thread = Ticket(tick)
+        thread.start()
+        threads.append(thread)
+
+    for i in threads:
+        i.join()
+        print('{:15} {:<10} {:<10}  {:5.2}'"%"  .format(i.join().get('symbol'),i.join().get('regularMarketPreviousClose'),i.join().get('regularMarketPrice'),i.join().get('regularMarketChangePercent')))
 #    sys.exit(0)
 
 if args.g != None:
